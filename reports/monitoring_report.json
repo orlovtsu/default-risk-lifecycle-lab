@@ -1,0 +1,26 @@
+{
+  "model_version": "model-v1",
+  "training_metrics": {
+    "roc_auc": 0.6719308140627938,
+    "brier_score": 0.015541808171653279,
+    "holdout_rows": 600.0
+  },
+  "monitoring_metrics": {
+    "feature_psi": {
+      "income_stability": 0.2278474854594722,
+      "activity_rate": 0.018702607880052385,
+      "balance_volatility": 0.04385952749927849,
+      "evidence_completeness": 0.27755407416188993
+    },
+    "max_feature_psi": 0.27755407416188993,
+    "prediction_mean_reference": 0.01026160086290334,
+    "prediction_mean_current": 0.018837893081279037,
+    "prediction_mean_shift": 0.008576292218375697,
+    "missingness_current": 0.0
+  },
+  "current_brier": 0.038096690120533815,
+  "recommendation": {
+    "status": "critical",
+    "action": "pause_automation_and_recalibrate_or_rollback"
+  }
+}
