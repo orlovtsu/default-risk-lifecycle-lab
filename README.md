@@ -16,6 +16,9 @@ The project contains no production model files, real feature names, customer dat
 - monitoring policy with healthy/warning/critical states;
 - shadow model comparison;
 - lifecycle recommendation: keep, investigate, recalibrate, or rollback;
+- label maturity and delayed-snapshot governance;
+- leakage-safe as-of history features;
+- calibration comparison, cohort diagnostics, and shadow-model analysis;
 - reproducible Markdown/PNG/JSON report;
 - FastAPI, Docker, CI, and tests.
 
@@ -37,3 +40,5 @@ The report includes a monitoring dashboard, PSI by feature, prediction shift, Br
 All metrics are synthetic demonstrations, not production evidence.
 
 See [lifecycle design](docs/lifecycle.md) and [model card](MODEL_CARD.md) for validation boundaries, monitoring ownership, and limitations.
+
+See [model development notes](docs/model-development.md) for label quality, leakage prevention, calibration, and promotion patterns.

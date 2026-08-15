@@ -17,7 +17,8 @@ def monitoring_metrics(reference: pd.DataFrame, current: pd.DataFrame, ref_pred:
     feature_psi = {
         column: psi(reference[column], current[column])
         for column in reference.columns
-        if column not in {"observed_at", "latent_probability"}
+        if column not in {"observed_at", "latent_probability", "synthetic_cohort"}
+        and pd.api.types.is_numeric_dtype(reference[column])
     }
     return {
         "feature_psi": feature_psi,

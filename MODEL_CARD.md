@@ -6,7 +6,7 @@ This repository demonstrates lifecycle monitoring for a synthetic default-risk-l
 
 ## Data and validation
 
-Data is generated locally from seeded distributions. Training, calibration, and holdout are chronological. Current populations can simulate feature drift, prevalence drift, and concept drift.
+Data is generated locally from seeded distributions. Training, calibration, and holdout are chronological. Current populations can simulate feature drift, prevalence drift, and concept drift. Additional checks cover label maturity, leakage-safe as-of history, calibration comparison, synthetic cohort diagnostics, and shadow-model disagreement.
 
 ## Monitoring
 

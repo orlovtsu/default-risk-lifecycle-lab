@@ -19,6 +19,7 @@ def make_dataset(config: SyntheticConfig = SyntheticConfig()) -> tuple[pd.DataFr
     phase = np.arange(config.rows) >= int(config.rows * 0.6)
     shifted = config.scenario in {"feature-drift", "concept-drift", "all"}
     prevalence_shift = config.scenario in {"prevalence-drift", "concept-drift", "all"}
+    cohort = rng.choice(["stable_synthetic_cohort", "volatile_synthetic_cohort"], config.rows, p=[0.72, 0.28])
     income_stability = rng.beta(8, 2, config.rows)
     activity_rate = rng.gamma(2.0, 0.8, config.rows)
     balance_volatility = rng.gamma(2.0, 0.22, config.rows)
@@ -29,6 +30,8 @@ def make_dataset(config: SyntheticConfig = SyntheticConfig()) -> tuple[pd.DataFr
         balance_volatility[phase] *= 1.45
     if prevalence_shift:
         evidence_completeness[phase] = np.clip(evidence_completeness[phase] - 0.12, 0, 1)
+    volatile = cohort == "volatile_synthetic_cohort"
+    balance_volatility[volatile] *= 1.25
     logit = (-2.5 - 2.0 * income_stability + 0.28 * activity_rate
              + 0.85 * balance_volatility - 1.3 * evidence_completeness
              + (0.8 if prevalence_shift else 0.0) * phase
@@ -41,5 +44,6 @@ def make_dataset(config: SyntheticConfig = SyntheticConfig()) -> tuple[pd.DataFr
         "activity_rate": activity_rate,
         "balance_volatility": balance_volatility,
         "evidence_completeness": evidence_completeness,
+        "synthetic_cohort": cohort,
         "latent_probability": probability,
     }), target
