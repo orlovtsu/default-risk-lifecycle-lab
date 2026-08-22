@@ -4,6 +4,7 @@ from monitoring.api import app
 from monitoring.drift import psi
 from monitoring.monitoring import build_monitoring_report
 from monitoring.reporting import build_report
+from monitoring.full_report import build_full_report
 from monitoring.policy import MonitoringPolicy, recommend
 from monitoring.synthetic import SyntheticConfig, make_dataset
 
@@ -47,3 +48,12 @@ def test_markdown_report_is_reproducible(tmp_path):
     assert report["recommendation"]["status"] == "critical"
     assert (tmp_path / "REPORT.md").exists()
     assert (tmp_path / "monitoring_dashboard.png").exists()
+
+
+def test_full_lifecycle_report_connects_governance_layers(tmp_path):
+    report = build_full_report(SyntheticConfig(seed=3, scenario="all", rows=500), tmp_path)
+    assert report["leakage_check"]["future_events_used"] is False
+    assert report["calibration"]["isotonic_brier"] >= 0
+    assert report["fairness"]
+    assert "model_registry" in report
+    assert (tmp_path / "FULL_REPORT.md").exists()

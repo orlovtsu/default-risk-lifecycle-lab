@@ -30,12 +30,15 @@ python -m venv .venv
 pip install -r requirements.txt
 pytest
 python scripts/run_monitoring_report.py --scenario all
+python scripts/run_full_report.py --scenario all
 uvicorn monitoring.api:app --reload
 ```
 
 Open `reports/REPORT.md` for the lifecycle report and `http://127.0.0.1:8000/docs` for the API.
 
 The report includes a monitoring dashboard, PSI by feature, prediction shift, Brier score comparison, and lifecycle recommendation.
+
+`reports/FULL_REPORT.md` is the integrated artifact: label quality, leakage checks, calibration, fairness diagnostics, shadow model comparison, registry state, and monitoring recommendation in one document.
 
 All metrics are synthetic demonstrations, not production evidence.
 

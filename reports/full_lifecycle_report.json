@@ -1,0 +1,95 @@
+{
+  "model_registry": {
+    "active": {
+      "model_version": "model-v1",
+      "status": "active",
+      "calibration": "isotonic",
+      "training_window": "synthetic-chronological-60-20-20",
+      "feature_schema_version": "features-v1",
+      "rollback_target": null
+    },
+    "candidate": null,
+    "promotion_rule": "promote only after holdout, calibration, drift, and cohort checks",
+    "rollback_rule": "rollback when monitoring status is critical or candidate degrades cohort metrics"
+  },
+  "training_metrics": {
+    "roc_auc": 0.5925663716814159,
+    "brier_score": 0.05306088336088866,
+    "holdout_rows": 600.0
+  },
+  "label_quality": {
+    "delayed": 0.6,
+    "timely": 0.4
+  },
+  "leakage_check": {
+    "history_rows": 3000,
+    "future_events_used": false,
+    "feature_schema": [
+      "income_stability",
+      "activity_rate",
+      "balance_volatility",
+      "evidence_completeness"
+    ]
+  },
+  "calibration": {
+    "raw_brier": 0.03475500180292379,
+    "isotonic_brier": 0.03385570476560371,
+    "raw_ece": 0.01513175844574153,
+    "isotonic_ece": 0.0,
+    "raw_calibration_points": 6,
+    "isotonic_calibration_points": 4
+  },
+  "fairness": [
+    {
+      "group": "stable_synthetic_cohort",
+      "rows": 2143,
+      "approval_rate": 0.9570695286980868,
+      "mean_probability": 0.057984580481186265,
+      "observed_event_rate": 0.032664489034064395,
+      "approval_if_good": 0.9633381572600096,
+      "adverse_impact_ratio": 0.9882031157762173,
+      "equal_opportunity_ratio": 0.988784825564991
+    },
+    {
+      "group": "volatile_synthetic_cohort",
+      "rows": 857,
+      "approval_rate": 0.9684947491248541,
+      "mean_probability": 0.054100761576561504,
+      "observed_event_rate": 0.047841306884480746,
+      "approval_if_good": 0.9742647058823529,
+      "adverse_impact_ratio": 1.0,
+      "equal_opportunity_ratio": 1.0
+    }
+  ],
+  "shadow_model": {
+    "mean_absolute_difference": 0.030756380314107504,
+    "disagreement_rate_at_10pct": 0.049,
+    "candidate_higher_rate": 0.305
+  },
+  "monitoring": {
+    "model_version": "model-v1",
+    "training_metrics": {
+      "roc_auc": 0.5240677966101694,
+      "brier_score": 0.01640063441951053,
+      "holdout_rows": 600.0
+    },
+    "monitoring_metrics": {
+      "feature_psi": {
+        "income_stability": 0.2283242615024668,
+        "activity_rate": 0.017691075850153434,
+        "balance_volatility": 0.04179219601385154,
+        "evidence_completeness": 0.27684167285400707
+      },
+      "max_feature_psi": 0.27684167285400707,
+      "prediction_mean_reference": 0.011481433293394763,
+      "prediction_mean_current": 0.01268664429700434,
+      "prediction_mean_shift": 0.0012052110036095773,
+      "missingness_current": 0.0
+    },
+    "current_brier": 0.036000456934266824,
+    "recommendation": {
+      "status": "critical",
+      "action": "pause_automation_and_recalibrate_or_rollback"
+    }
+  }
+}
