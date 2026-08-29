@@ -81,8 +81,23 @@ These are synthetic cohorts and not real protected groups or a fairness certific
 
 Feature drift, prediction shift, current Brier score, and lifecycle policy are evaluated together. A critical result recommends pausing automation and recalibrating or rolling back.
 
+## Data Contract and Rolling Monitoring
+
+- Contract version: `features-v1`
+- Contract validation errors: `[]`
+- Rolling monitoring windows: `5`
+
+## Cost-sensitive Thresholds
+
+| Threshold | Expected cost | Approval rate | Review rate | False-accept rate |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.05 | 0.3641 | 0.256 | 0.502 | 0.003 |
+| 0.10 | 0.1807 | 0.960 | 0.000 | 0.030 |
+| 0.15 | 0.1727 | 0.961 | 0.011 | 0.030 |
+| 0.20 | 0.1633 | 0.973 | 0.027 | 0.031 |
+
 ## Reproduce
 
 ```powershell
-python scripts/run_monitoring_report.py --scenario all
+python scripts/run_monitoring_report.py --scenario {config.scenario}
 ```

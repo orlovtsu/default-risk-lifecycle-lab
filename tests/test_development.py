@@ -6,6 +6,9 @@ from monitoring.features import build_as_of_history
 from monitoring.fairness import synthetic_group_report
 from monitoring.label_quality import add_label_quality, label_quality_summary
 from monitoring.lifecycle import shadow_comparison
+from monitoring.contracts import DataContract
+from monitoring.costs import threshold_cost_curve
+from monitoring.rolling import rolling_monitoring
 from monitoring.model import train
 from monitoring.synthetic import SyntheticConfig, make_dataset
 
@@ -53,3 +56,24 @@ def test_shadow_comparison_is_bounded():
     report = shadow_comparison(active, candidate, frame)
     assert report["mean_absolute_difference"] >= 0
     assert 0 <= report["disagreement_rate_at_10pct"] <= 1
+
+
+def test_data_contract_rejects_target_leakage():
+    frame, _ = make_dataset(SyntheticConfig(rows=100))
+    errors = DataContract().validate(frame.assign(event=0))
+    assert "forbidden:event" in errors
+
+
+def test_threshold_cost_curve_is_bounded():
+    curve = threshold_cost_curve(np.array([0, 1, 0, 1]), np.array([0.02, 0.12, 0.08, 0.2]))
+    assert len(curve) == 4
+    assert curve["expected_cost"].ge(0).all()
+    assert curve["approval_rate"].between(0, 1).all()
+
+
+def test_rolling_monitoring_returns_windows():
+    model, _ = train(SyntheticConfig(rows=1000))
+    frame, target = make_dataset(SyntheticConfig(rows=1000, scenario="all"))
+    result = rolling_monitoring(frame, target, model, window=250)
+    assert not result.empty
+    assert result["max_feature_psi"].ge(0).all()

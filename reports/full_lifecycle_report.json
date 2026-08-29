@@ -91,5 +91,76 @@
       "status": "critical",
       "action": "pause_automation_and_recalibrate_or_rollback"
     }
-  }
+  },
+  "data_contract": {
+    "version": "features-v1",
+    "errors": []
+  },
+  "rolling_monitoring": [
+    {
+      "window_start": "2025-05-15",
+      "rows": 500,
+      "max_feature_psi": 0.05725706906498294,
+      "prediction_shift": 0.004571295557215589,
+      "event_rate": 0.028
+    },
+    {
+      "window_start": "2026-09-27",
+      "rows": 500,
+      "max_feature_psi": 0.03270179521741105,
+      "prediction_shift": 0.006322912999772612,
+      "event_rate": 0.01
+    },
+    {
+      "window_start": "2028-02-09",
+      "rows": 500,
+      "max_feature_psi": 0.38321431582609633,
+      "prediction_shift": 0.010382331059868563,
+      "event_rate": 0.046
+    },
+    {
+      "window_start": "2029-06-23",
+      "rows": 500,
+      "max_feature_psi": 10.1432225803384,
+      "prediction_shift": 0.030079908683399124,
+      "event_rate": 0.064
+    },
+    {
+      "window_start": "2030-11-05",
+      "rows": 500,
+      "max_feature_psi": 11.535380477789724,
+      "prediction_shift": 0.02458752094007067,
+      "event_rate": 0.06
+    }
+  ],
+  "threshold_cost_curve": [
+    {
+      "threshold": 0.05,
+      "expected_cost": 0.3640833333333333,
+      "approval_rate": 0.25566666666666665,
+      "review_rate": 0.5016666666666667,
+      "false_accept_rate": 0.003
+    },
+    {
+      "threshold": 0.1,
+      "expected_cost": 0.18066666666666667,
+      "approval_rate": 0.9603333333333334,
+      "review_rate": 0.0,
+      "false_accept_rate": 0.029666666666666668
+    },
+    {
+      "threshold": 0.15,
+      "expected_cost": 0.17275,
+      "approval_rate": 0.9613333333333334,
+      "review_rate": 0.011,
+      "false_accept_rate": 0.029666666666666668
+    },
+    {
+      "threshold": 0.2,
+      "expected_cost": 0.16333333333333333,
+      "approval_rate": 0.9726666666666667,
+      "review_rate": 0.02666666666666667,
+      "false_accept_rate": 0.03133333333333333
+    }
+  ]
 }
