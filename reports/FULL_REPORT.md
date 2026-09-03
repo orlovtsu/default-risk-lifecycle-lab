@@ -7,6 +7,8 @@
 
 This synthetic report connects model development, label governance, leakage prevention, calibration, cohort diagnostics, shadow scoring, and production-style monitoring.
 
+![Full lifecycle dashboard](full_lifecycle_dashboard.png)
+
 ## Model Registry
 
 ```json

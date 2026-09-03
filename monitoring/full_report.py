@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from .calibration import compare_calibrators
 from .contracts import DataContract
@@ -34,11 +35,67 @@ def build_full_report(config: SyntheticConfig = SyntheticConfig(), output_dir: P
     calibration = compare_calibrators(target.to_numpy(), raw)
     fairness = synthetic_group_report(frame, probabilities, threshold=0.1)
     shadow_model, _ = train(SyntheticConfig(seed=config.seed + 9, scenario=config.scenario, rows=config.rows))
+    shadow_metrics = shadow_comparison(model, shadow_model, frame)
     history = build_as_of_history(frame[["record_id", "entity_id", "decision_at", "event"]])
     monitoring = build_monitoring_report(config)
     contract_errors = DataContract().validate(frame[FEATURES])
     rolling = rolling_monitoring(frame, target, model, window=max(250, config.rows // 6))
     cost_curve = threshold_cost_curve(target.to_numpy(), probabilities)
+    figure, axes = plt.subplots(2, 3, figsize=(16, 9), constrained_layout=True)
+    psi_values = monitoring["monitoring_metrics"]["feature_psi"]
+    axes[0, 0].barh(list(psi_values), list(psi_values.values()), color="#c94c4c")
+    axes[0, 0].axvline(0.10, color="#e6a23c", linestyle="--", label="warning")
+    axes[0, 0].axvline(0.25, color="#8f1d2c", linestyle="--", label="critical")
+    axes[0, 0].set_title("Feature PSI drift", loc="left", fontweight="bold")
+    axes[0, 0].legend(frameon=False, fontsize=8)
+    axes[0, 0].grid(axis="x", alpha=0.2)
+
+    axes[0, 1].bar(["Raw Brier", "Isotonic Brier", "Raw ECE", "Isotonic ECE"],
+                   [calibration["raw_brier"], calibration["isotonic_brier"], calibration["raw_ece"], calibration["isotonic_ece"]],
+                   color=["#9ecae1", "#3182bd", "#fdae6b", "#e6550d"])
+    axes[0, 1].set_title("Calibration improvement", loc="left", fontweight="bold")
+    axes[0, 1].tick_params(axis="x", rotation=25)
+    axes[0, 1].grid(axis="y", alpha=0.2)
+
+    fairness_frame = pd.DataFrame(fairness)
+    positions = np.arange(len(fairness_frame))
+    axes[0, 2].bar(positions - 0.18, fairness_frame["adverse_impact_ratio"], 0.36, label="AIR", color="#4c956c")
+    axes[0, 2].bar(positions + 0.18, fairness_frame["equal_opportunity_ratio"], 0.36, label="EO ratio", color="#e07a3f")
+    axes[0, 2].axhline(0.8, color="#8f1d2c", linestyle="--", linewidth=1)
+    axes[0, 2].set_xticks(positions, fairness_frame["group"], rotation=20, ha="right")
+    axes[0, 2].set_ylim(0, 1.1)
+    axes[0, 2].set_title("Synthetic cohort diagnostics", loc="left", fontweight="bold")
+    axes[0, 2].legend(frameon=False, fontsize=8)
+    axes[0, 2].grid(axis="y", alpha=0.2)
+
+    shadow = shadow_metrics
+    axes[1, 0].bar(["Mean abs diff", "Threshold disagreement", "Candidate higher"],
+                   [shadow["mean_absolute_difference"], shadow["disagreement_rate_at_10pct"], shadow["candidate_higher_rate"]],
+                   color="#345995")
+    axes[1, 0].set_ylim(0, 1)
+    axes[1, 0].set_title("Shadow model comparison", loc="left", fontweight="bold")
+    axes[1, 0].tick_params(axis="x", rotation=20)
+    axes[1, 0].grid(axis="y", alpha=0.2)
+
+    axes[1, 1].plot(cost_curve["threshold"], cost_curve["expected_cost"], "o-", color="#c94c4c", label="expected cost")
+    axes[1, 1].plot(cost_curve["threshold"], cost_curve["approval_rate"], "o-", color="#4c956c", label="approval rate")
+    axes[1, 1].set_title("Cost-sensitive threshold policy", loc="left", fontweight="bold")
+    axes[1, 1].set_xlabel("Threshold")
+    axes[1, 1].legend(frameon=False, fontsize=8)
+    axes[1, 1].grid(alpha=0.2)
+
+    rolling_frame = rolling.copy()
+    if not rolling_frame.empty:
+        axes[1, 2].plot(rolling_frame["window_start"], rolling_frame["max_feature_psi"], "o-", label="max PSI", color="#c94c4c")
+        axes[1, 2].plot(rolling_frame["window_start"], rolling_frame["event_rate"], "o-", label="event rate", color="#345995")
+        axes[1, 2].tick_params(axis="x", rotation=35)
+    axes[1, 2].set_title("Rolling monitoring windows", loc="left", fontweight="bold")
+    axes[1, 2].legend(frameon=False, fontsize=8)
+    axes[1, 2].grid(alpha=0.2)
+    for axis in axes.flat:
+        axis.spines[["top", "right"]].set_visible(False)
+    figure.savefig(output_dir / "full_lifecycle_dashboard.png", dpi=160)
+    plt.close(figure)
     report = {
         "model_registry": registry_snapshot(),
         "training_metrics": training_metrics,
@@ -50,7 +107,7 @@ def build_full_report(config: SyntheticConfig = SyntheticConfig(), output_dir: P
         },
         "calibration": calibration,
         "fairness": fairness.to_dict(orient="records"),
-        "shadow_model": shadow_comparison(model, shadow_model, frame),
+        "shadow_model": shadow_metrics,
         "monitoring": monitoring,
         "data_contract": {"version": DataContract().version, "errors": contract_errors},
         "rolling_monitoring": rolling.to_dict(orient="records"),
@@ -69,6 +126,8 @@ def build_full_report(config: SyntheticConfig = SyntheticConfig(), output_dir: P
 **Recommended action:** `{monitoring['recommendation']['action']}`
 
 This synthetic report connects model development, label governance, leakage prevention, calibration, cohort diagnostics, shadow scoring, and production-style monitoring.
+
+![Full lifecycle dashboard](full_lifecycle_dashboard.png)
 
 ## Model Registry
 
