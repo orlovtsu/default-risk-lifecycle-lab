@@ -87,10 +87,14 @@ def build_full_report(config: SyntheticConfig = SyntheticConfig(), output_dir: P
     rolling_frame = rolling.copy()
     if not rolling_frame.empty:
         axes[1, 2].plot(rolling_frame["window_start"], rolling_frame["max_feature_psi"], "o-", label="max PSI", color="#c94c4c")
-        axes[1, 2].plot(rolling_frame["window_start"], rolling_frame["event_rate"], "o-", label="event rate", color="#345995")
+        event_axis = axes[1, 2].twinx()
+        event_axis.plot(rolling_frame["window_start"], rolling_frame["event_rate"], "o-", label="event rate", color="#345995")
+        event_axis.set_ylabel("Observed event rate", color="#345995")
+        event_axis.tick_params(axis="y", labelcolor="#345995")
         axes[1, 2].tick_params(axis="x", rotation=35)
     axes[1, 2].set_title("Rolling monitoring windows", loc="left", fontweight="bold")
-    axes[1, 2].legend(frameon=False, fontsize=8)
+    axes[1, 2].set_ylabel("Maximum feature PSI", color="#c94c4c")
+    axes[1, 2].legend(frameon=False, fontsize=8, loc="upper left")
     axes[1, 2].grid(alpha=0.2)
     for axis in axes.flat:
         axis.spines[["top", "right"]].set_visible(False)
@@ -195,12 +199,12 @@ Feature drift, prediction shift, current Brier score, and lifecycle policy are e
         f"| {row['threshold']:.2f} | {row['expected_cost']:.4f} | {row['approval_rate']:.3f} | {row['review_rate']:.3f} | {row['false_accept_rate']:.3f} |"
         for row in report["threshold_cost_curve"]
     )
-    markdown += """
+    markdown += f"""
 
 ## Reproduce
 
 ```powershell
-python scripts/run_monitoring_report.py --scenario {config.scenario}
+python scripts/run_full_report.py --scenario {config.scenario}
 ```
 """
     (output_dir / "FULL_REPORT.md").write_text(markdown, encoding="utf-8")

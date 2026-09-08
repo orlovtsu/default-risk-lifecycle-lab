@@ -101,5 +101,5 @@ Feature drift, prediction shift, current Brier score, and lifecycle policy are e
 ## Reproduce
 
 ```powershell
-python scripts/run_monitoring_report.py --scenario {config.scenario}
+python scripts/run_full_report.py --scenario all
 ```
