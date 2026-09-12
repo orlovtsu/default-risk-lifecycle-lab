@@ -9,6 +9,32 @@ This synthetic report connects model development, label governance, leakage prev
 
 ![Full lifecycle dashboard](full_lifecycle_dashboard.png)
 
+## Individual analyses
+
+### Feature Drift
+
+![Feature PSI drift](psi_drift.png)
+
+### Calibration
+
+![Calibration comparison](calibration_comparison.png)
+
+### Synthetic Cohorts
+
+![Fairness diagnostics](fairness_diagnostics.png)
+
+### Shadow Model
+
+![Shadow model comparison](shadow_model_comparison.png)
+
+### Threshold Policy
+
+![Threshold policy](threshold_policy.png)
+
+### Rolling Monitoring
+
+![Rolling monitoring](rolling_monitoring.png)
+
 ## Model Registry
 
 ```json

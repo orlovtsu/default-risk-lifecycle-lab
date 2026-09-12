@@ -100,6 +100,63 @@ def build_full_report(config: SyntheticConfig = SyntheticConfig(), output_dir: P
         axis.spines[["top", "right"]].set_visible(False)
     figure.savefig(output_dir / "full_lifecycle_dashboard.png", dpi=160)
     plt.close(figure)
+
+    def save_panel(filename, title, draw, figsize=(9, 5)):
+        panel, axis = plt.subplots(figsize=figsize, constrained_layout=True)
+        draw(panel, axis)
+        axis.set_title(title, loc="left", fontweight="bold", fontsize=15)
+        axis.spines[["top", "right"]].set_visible(False)
+        panel.savefig(output_dir / filename, dpi=180)
+        plt.close(panel)
+
+    save_panel("psi_drift.png", "Feature PSI drift", lambda panel, axis: (
+        axis.barh(list(psi_values), list(psi_values.values()), color="#c94c4c"),
+        axis.axvline(0.10, color="#e6a23c", linestyle="--"),
+        axis.axvline(0.25, color="#8f1d2c", linestyle="--"),
+        axis.set_xlabel("Population stability index"),
+        axis.grid(axis="x", alpha=0.2),
+    ))
+    save_panel("calibration_comparison.png", "Calibration comparison", lambda panel, axis: (
+        axis.bar(["Raw Brier", "Isotonic Brier", "Raw ECE", "Isotonic ECE"],
+                 [calibration["raw_brier"], calibration["isotonic_brier"], calibration["raw_ece"], calibration["isotonic_ece"]],
+                 color=["#9ecae1", "#3182bd", "#fdae6b", "#e6550d"]),
+        axis.set_ylabel("Error"),
+        axis.tick_params(axis="x", rotation=25),
+        axis.grid(axis="y", alpha=0.2),
+    ))
+    save_panel("fairness_diagnostics.png", "Synthetic cohort diagnostics", lambda panel, axis: (
+        axis.bar(np.arange(len(fairness_frame)) - 0.18, fairness_frame["adverse_impact_ratio"], 0.36, label="AIR", color="#4c956c"),
+        axis.bar(np.arange(len(fairness_frame)) + 0.18, fairness_frame["equal_opportunity_ratio"], 0.36, label="EO ratio", color="#e07a3f"),
+        axis.axhline(0.8, color="#8f1d2c", linestyle="--"),
+        axis.set_xticks(np.arange(len(fairness_frame)), fairness_frame["group"], rotation=20, ha="right"),
+        axis.set_ylim(0, 1.1),
+        axis.legend(frameon=False),
+        axis.grid(axis="y", alpha=0.2),
+    ))
+    save_panel("shadow_model_comparison.png", "Shadow model comparison", lambda panel, axis: (
+        axis.bar(["Mean abs diff", "Threshold disagreement", "Candidate higher"],
+                 [shadow_metrics["mean_absolute_difference"], shadow_metrics["disagreement_rate_at_10pct"], shadow_metrics["candidate_higher_rate"]], color="#345995"),
+        axis.set_ylim(0, 1),
+        axis.tick_params(axis="x", rotation=20),
+        axis.grid(axis="y", alpha=0.2),
+    ))
+    save_panel("threshold_policy.png", "Cost-sensitive threshold policy", lambda panel, axis: (
+        axis.plot(cost_curve["threshold"], cost_curve["expected_cost"], "o-", label="expected cost", color="#c94c4c"),
+        axis.plot(cost_curve["threshold"], cost_curve["approval_rate"], "o-", label="approval rate", color="#4c956c"),
+        axis.set_xlabel("Threshold"),
+        axis.legend(frameon=False),
+        axis.grid(alpha=0.2),
+    ))
+    if not rolling.empty:
+        def draw_rolling(panel, axis):
+            axis.plot(rolling["window_start"], rolling["max_feature_psi"], "o-", label="max PSI", color="#c94c4c")
+            secondary = axis.twinx()
+            secondary.plot(rolling["window_start"], rolling["event_rate"], "o-", label="event rate", color="#345995")
+            axis.set_ylabel("Maximum feature PSI", color="#c94c4c")
+            secondary.set_ylabel("Observed event rate", color="#345995")
+            axis.tick_params(axis="x", rotation=35)
+            axis.grid(alpha=0.2)
+        save_panel("rolling_monitoring.png", "Rolling monitoring windows", draw_rolling)
     report = {
         "model_registry": registry_snapshot(),
         "training_metrics": training_metrics,
@@ -132,6 +189,32 @@ def build_full_report(config: SyntheticConfig = SyntheticConfig(), output_dir: P
 This synthetic report connects model development, label governance, leakage prevention, calibration, cohort diagnostics, shadow scoring, and production-style monitoring.
 
 ![Full lifecycle dashboard](full_lifecycle_dashboard.png)
+
+## Individual analyses
+
+### Feature Drift
+
+![Feature PSI drift](psi_drift.png)
+
+### Calibration
+
+![Calibration comparison](calibration_comparison.png)
+
+### Synthetic Cohorts
+
+![Fairness diagnostics](fairness_diagnostics.png)
+
+### Shadow Model
+
+![Shadow model comparison](shadow_model_comparison.png)
+
+### Threshold Policy
+
+![Threshold policy](threshold_policy.png)
+
+### Rolling Monitoring
+
+![Rolling monitoring](rolling_monitoring.png)
 
 ## Model Registry
 
