@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from .monitoring import build_monitoring_report
