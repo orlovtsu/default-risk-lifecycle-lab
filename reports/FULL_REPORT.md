@@ -5,33 +5,43 @@
 **Lifecycle status:** `critical`  
 **Recommended action:** `pause_automation_and_recalibrate_or_rollback`
 
-This synthetic report connects model development, label governance, leakage prevention, calibration, cohort diagnostics, shadow scoring, and production-style monitoring.
-
-![Full lifecycle dashboard](full_lifecycle_dashboard.png)
+This synthetic report connects model development, label governance, leakage prevention, calibration, cohort diagnostics, shadow scoring, and production-style monitoring. Each analysis is shown separately so it can be read and discussed on its own.
 
 ## Individual analyses
 
 ### Feature Drift
 
+This chart shows which input distributions moved relative to the reference population. PSI above the warning or critical lines should trigger investigation before model decisions are trusted.
+
 ![Feature PSI drift](psi_drift.png)
 
 ### Calibration
+
+This compares raw probability error with isotonic-calibrated error. Lower Brier and ECE indicate probabilities that are more useful for threshold and cost decisions.
 
 ![Calibration comparison](calibration_comparison.png)
 
 ### Synthetic Cohorts
 
+The AIR and equal-opportunity-style ratios compare two artificial diagnostic cohorts. The dashed line is a screening reference, not a fairness certification for real populations.
+
 ![Fairness diagnostics](fairness_diagnostics.png)
 
 ### Shadow Model
+
+This chart measures how often a candidate model differs from the active model at the decision threshold. Large disagreement requires review before promotion.
 
 ![Shadow model comparison](shadow_model_comparison.png)
 
 ### Threshold Policy
 
+This shows the cost and approval trade-off when the operating threshold changes. It separates model quality from the business policy applied to the score.
+
 ![Threshold policy](threshold_policy.png)
 
 ### Rolling Monitoring
+
+This tracks drift and observed event rate across successive monitoring windows, making a gradual or sudden degradation visible instead of hiding it in one aggregate metric.
 
 ![Rolling monitoring](rolling_monitoring.png)
 
