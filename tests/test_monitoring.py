@@ -2,12 +2,11 @@ from fastapi.testclient import TestClient
 
 from monitoring.api import app
 from monitoring.drift import psi
-from monitoring.monitoring import build_monitoring_report
-from monitoring.reporting import build_report
 from monitoring.full_report import build_full_report
+from monitoring.monitoring import build_monitoring_report
 from monitoring.policy import MonitoringPolicy, recommend
+from monitoring.reporting import build_report
 from monitoring.synthetic import SyntheticConfig, make_dataset
-
 
 client = TestClient(app)
 

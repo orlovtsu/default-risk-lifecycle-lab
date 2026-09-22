@@ -1,3 +1,5 @@
+from itertools import pairwise
+
 import numpy as np
 from sklearn.calibration import calibration_curve
 from sklearn.isotonic import IsotonicRegression
@@ -6,9 +8,8 @@ from sklearn.metrics import brier_score_loss
 
 def ece(y_true, probability, bins: int = 10) -> float:
     edges = np.linspace(0, 1, bins + 1)
-    total = len(y_true)
     error = 0.0
-    for low, high in zip(edges[:-1], edges[1:]):
+    for low, high in pairwise(edges):
         mask = (probability >= low) & (probability < high if high < 1 else probability <= high)
         if mask.any():
             error += mask.mean() * abs(probability[mask].mean() - y_true[mask].mean())

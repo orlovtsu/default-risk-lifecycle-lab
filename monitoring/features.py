@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 HISTORY_FEATURES = ["prior_event_count", "prior_bad_count", "days_since_prior", "prior_bad_rate"]
 
 
@@ -9,8 +8,8 @@ def build_as_of_history(frame: pd.DataFrame) -> pd.DataFrame:
     ordered = frame.sort_values(["entity_id", "decision_at"]).copy()
     rows = []
     for _, group in ordered.groupby("entity_id", sort=False):
-        prior_dates = []
-        prior_bad = []
+        prior_dates: list[pd.Timestamp] = []
+        prior_bad: list[int] = []
         for _, current in group.iterrows():
             decision_at = current["decision_at"]
             eligible = [index for index, value in enumerate(prior_dates) if value < decision_at]

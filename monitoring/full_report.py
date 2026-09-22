@@ -1,17 +1,18 @@
 import json
 from pathlib import Path
 
+import matplotlib
 import numpy as np
 import pandas as pd
-import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from .calibration import compare_calibrators
 from .contracts import DataContract
 from .costs import threshold_cost_curve
-from .features import build_as_of_history
 from .fairness import synthetic_group_report
+from .features import build_as_of_history
 from .label_quality import add_label_quality, label_quality_summary
 from .lifecycle import shadow_comparison
 from .model import train
@@ -107,7 +108,7 @@ def build_full_report(config: SyntheticConfig = SyntheticConfig(), output_dir: P
         "training_metrics": training_metrics,
         "label_quality": label_quality_summary(quality_frame),
         "leakage_check": {
-            "history_rows": int(len(history)),
+            "history_rows": len(history),
             "future_events_used": False,
             "feature_schema": FEATURES,
         },

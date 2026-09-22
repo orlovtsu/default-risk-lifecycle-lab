@@ -1,9 +1,7 @@
-import numpy as np
 import pandas as pd
 
 from .drift import monitoring_metrics
 from .model import CalibratedModel
-from .synthetic import FEATURES
 
 
 def rolling_monitoring(frame: pd.DataFrame, target: pd.Series, model: CalibratedModel, window: int = 500) -> pd.DataFrame:
